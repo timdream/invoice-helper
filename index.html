@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>我要開發票：手開發票檢查小幫手</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-theme.min.css">
+  <script type="text/javascript">
+    if (window.location.hostname === 'timdream.org') {
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-4623408-2']);
+      _gaq.push(['_trackPageview']);
+
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    }
+
+  </script>
+  <style type="text/css">
+    #facebook-like {
+      float: right;
+    }
+
+    #total-word, #year, #month, #date {
+      font-weight: bold;
+      font-size: 200%;
+      font-family: 'STKaiti','BiauKai','Kai','標楷體',sans-serif;
+    }
+
+    .label {
+      display: none;
+    }
+
+    .has-success .label-success,
+    .has-warning .label-warning,
+    .has-error .label-danger {
+      display: inline;
+    }
+
+    body {
+      padding-top: 70px;
+    }
+
+    .nav > li {
+      float: left;
+    }
+
+/*    @media screen and (min-width: 768px) {
+      .navbar select {
+        display: none;
+      }
+    }
+
+    @media (max-width: 767px) {
+      body > .container {
+        margin: 10px 5px 70px;
+      }
+
+      .navbar .nav, .navbar .navbar-brand {
+        display: none;
+      }
+
+      .navbar select {
+        margin: 10px 0;
+        display: block;
+      }
+    } */
+  </style>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js" defer></script>
+  <script type="text/javascript" src="assets/app.js" defer></script>
+</head>
+<body>
+  <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+    <div class="container">
+      <a class="navbar-brand" href="./">我要開發票</a>
+<!--      <select class="form-control" id="mobile-nav">
+        <option value="https://github.com/timdream/invoice-helper">程式碼</option>
+        <!-- <option value="https://github.com/timdream/invoice-helper/blob/master/README.md">README</option> -->
+<!--        <option value="http://timdream.org/">timdream</option>
+      </select> -->
+      <ul class="nav navbar-nav">
+        <li><a href="https://github.com/timdream/invoice-helper">程式碼</a></li>
+        <!-- <li><a href="https://github.com/timdream/invoice-helper/blob/master/README.md">README</a></li> -->
+        <li><a href="http://timdream.org/">timdream</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container">
+    <div class="row">
+      <div class="form-group col-sm-12">
+        <h1>手開發票檢查小幫手
+          <iframe id="facebook-like" src="https://www.facebook.com/plugins/like.php?href=http%3A%2F%2Ftimdream.org%2Finvoice-helper%2F&amp;layout=box_count&amp;show_faces=false&amp;width=20&amp;action=like&amp;font=trebuchet+ms&amp;colorscheme=light&amp;height=65" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:48px; height:65px;" allowTransparency="true"></iframe>
+        </h1>
+        <p class="lead">查詢公司全名、檢查統編、計算稅額</p>
+      </div>
+    </div>
+    <form role="form">
+      <fieldset>
+        <legend>今天日期</legend>
+        <p class="lead">中華民國
+         <span id="year">?</span> 年
+         <span id="month">?</span> 月
+         <span id="date">?</span> 日</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>買受人</legend>
+        <div class="row">
+          <div class="form-group col-sm-3">
+            <label for="company-id" class="">統一編號
+              <span class="label label-success">正確</span>
+              <span class="label label-warning">未完成</span>
+              <span class="label label-danger">錯誤</span>
+            </label>
+            <!-- pattern is required to invoke numeric keypad on iPhone -->
+            <input id="company-id" type="text" pattern="[0-9]*" class="form-control input-lg">
+          </div>
+          <div class="form-group col-sm-9">
+            <label for="company-name" class="">公司名稱
+              <span class="label label-success">正確</span>
+              <span class="label label-warning">未完成</span>
+              <span class="label label-danger">錯誤</span>
+            </label>
+            <input id="company-name" type="text" class="form-control input-lg">
+          </div>
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>金額</legend>
+        <p class="help-block">銷售額與總計金額擇一填寫。</p>
+        <div class="row">
+          <div class="form-group col-sm-4">
+            <label for="price">銷售額（未稅）</label>
+            <!-- pattern is required to invoke numeric keypad on iPhone -->
+            <input id="price" type="text" pattern="[0-9]*" class="form-control input-lg">
+          </div>
+          <div class="form-group col-sm-2">
+            <label for="tax-precent">稅率</label>
+            <!-- pattern is required to invoke numeric keypad on iPhone -->
+            <div class="input-group">
+              <input id="tax-precent" type="text" pattern="[0-9]*" class="form-control" value="5">
+              <span class="input-group-addon">%</span>
+            </div>
+          </div>
+          <div class="form-group col-sm-2">
+            <label for="tax">營業稅額</label>
+            <!-- pattern is required to invoke numeric keypad on iPhone -->
+            <input id="tax" type="text" pattern="[0-9]*" class="form-control input-lg" readonly>
+          </div>
+          <div class="form-group col-sm-4">
+            <label for="total">總計金額（含稅）</label>
+            <!-- pattern is required to invoke numeric keypad on iPhone -->
+            <input id="total" type="text" pattern="[0-9]*" class="form-control input-lg">
+          </div>
+        </div>
+        <div class="row">
+          <div class="form-group col-sm-12">
+            <label>總計新台幣（中文大寫）</label>
+            <p class="lead"><span id="total-word">&nbsp;</span> 圓整</p>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+    <p>統一編號/公司名稱查詢由 <a href="http://company.g0v.ronny.tw/" target="_blank">g0v.tw 台灣公司資料</a>網站提供，特此致謝。</p>
+<!--
+    <p>還是一直寫錯手開發票嗎？快<a href="https://www.google.com/search?q=%E9%9B%BB%E5%AD%90%E8%A8%88%E7%AE%97%E6%A9%9F%E7%B5%B1%E4%B8%80%E7%99%BC%E7%A5%A8+%E7%94%B3%E8%AB%8B" target="_blank">申請電子計算機統一發票</a>吧。</p>
+-->
+  </div>
+</body>
+</html>
