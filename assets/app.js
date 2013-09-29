@@ -112,7 +112,10 @@ var InvoiceHelper = function InvoiceHelper(config) {
   config.taxPrecentElement.addEventListener('blur', this);
   config.totalElement.addEventListener('input', this);
   config.totalElement.addEventListener('blur', this);
+
+  this._companyNameTimer = undefined;
 };
+InvoiceHelper.prototype.INPUT_WAIT = 250;
 InvoiceHelper.prototype.handleEvent = function(evt) {
   var el = evt.target;
   switch (el) {
@@ -122,9 +125,6 @@ InvoiceHelper.prototype.handleEvent = function(evt) {
       break;
 
     case this.config.companyNameElement:
-      if (evt.type === 'input' && el.value.length < 3)
-        break;
-
       this.checkCompanyName(evt.type === 'blur');
 
       break;
@@ -137,7 +137,7 @@ InvoiceHelper.prototype.handleEvent = function(evt) {
       break;
   }
 };
-InvoiceHelper.prototype.checkCompanyId = function(showError) {
+InvoiceHelper.prototype.checkCompanyId = function(blur) {
   var $id = $(this.config.companyIdElement);
   var $name = $(this.config.companyNameElement);
   var val = $.trim($id.val());
@@ -146,7 +146,7 @@ InvoiceHelper.prototype.checkCompanyId = function(showError) {
   $name.parent().removeClass('has-error has-warning has-success');
 
   if (!InvoiceChecker.isValid(val)) {
-    if (showError || val.length === 8) {
+    if (blur || val.length === 8) {
       $id.parent().addClass('has-error');
       $name.parent().addClass('has-warning');
     } else {
@@ -157,8 +157,13 @@ InvoiceHelper.prototype.checkCompanyId = function(showError) {
     return;
   }
 
-  $id.parent().addClass('has-success');
+  if (blur) {
+    $id.parent().addClass('has-success');
+  } else {
+    $id.parent().addClass('has-warning');
+  }
   $name.parent().addClass('has-warning');
+
   CompanyNameService.getCompanyFullNameFromId(val, function(name) {
     if (!name) {
       $id.parent().removeClass('has-warning has-success').addClass('has-error');
@@ -167,11 +172,15 @@ InvoiceHelper.prototype.checkCompanyId = function(showError) {
       return;
     }
 
-    $name.val(name);
+    $id.parent().removeClass('has-warning has-error').addClass('has-success');
     $name.parent().removeClass('has-warning has-error').addClass('has-success');
+    if ($name.val() !== name)
+      $name.val(name);
   });
 };
 InvoiceHelper.prototype.checkCompanyName = function(blur) {
+  clearTimeout(this._companyNameTimer);
+
   var $id = $(this.config.companyIdElement);
   var $name = $(this.config.companyNameElement);
   var val = $.trim($name.val());
@@ -179,20 +188,32 @@ InvoiceHelper.prototype.checkCompanyName = function(blur) {
   $id.parent().removeClass('has-error has-warning has-success');
   $name.parent().removeClass('has-error has-warning has-success');
 
-  if (!val) {
-    if (blur) {
-      $id.parent().addClass('has-error');
-      $name.parent().addClass('has-warning');
-    } else {
-      $id.parent().addClass('has-warning');
-      $name.parent().addClass('has-warning');
-    }
+  if (blur && val.length < 3) {
+    $id.parent().addClass('has-warning');
+    $name.parent().addClass('has-warning');
 
+    return;
+  }
+
+  if (val.length < 3) {
     return;
   }
 
   $id.parent().addClass('has-warning');
   $name.parent().addClass('has-warning');
+
+  if (blur) {
+    this._checkCompanyNameRemote(true);
+  } else {
+    this._companyNameTimer = setTimeout(function() {
+      this._checkCompanyNameRemote(false);
+    }.bind(this), this.INPUT_WAIT);
+  }
+};
+InvoiceHelper.prototype._checkCompanyNameRemote = function(blur) {
+  var $id = $(this.config.companyIdElement);
+  var $name = $(this.config.companyNameElement);
+  var val = $.trim($name.val());
 
   CompanyNameService.getCompany(val, function(info) {
     if (!info) {
@@ -203,10 +224,14 @@ InvoiceHelper.prototype.checkCompanyName = function(blur) {
     }
 
     if (blur) {
-      $name.val(info.name);
+      if ($name.val() !== info.name) {
+        $name.val(info.name);
+      }
       $name.parent().removeClass('has-warning has-error').addClass('has-success');
     }
-    $id.val(info.id);
+    if ($id.val() !== info.id) {
+      $id.val(info.id);
+    }
     $id.parent().removeClass('has-warning has-error').addClass('has-success');
   });
 };

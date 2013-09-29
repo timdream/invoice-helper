@@ -32,6 +32,11 @@
       font-family: 'STKaiti','BiauKai','Kai','標楷體',sans-serif;
     }
 
+    .input-lg-height {
+      margin-top: 5px;
+      margin-bottom: 6px;
+    }
+
     .label {
       display: none;
     }
@@ -118,7 +123,7 @@
               <span class="label label-danger">錯誤</span>
             </label>
             <!-- pattern is required to invoke numeric keypad on iPhone -->
-            <input id="company-id" type="text" pattern="[0-9]*" class="form-control input-lg">
+            <input id="company-id" type="text" inputmode="numeric" maxlength="8" pattern="[0-9]*" class="form-control input-lg">
           </div>
           <div class="form-group col-sm-9">
             <label for="company-name" class="">公司名稱
@@ -142,7 +147,7 @@
           <div class="form-group col-sm-2">
             <label for="tax-precent">稅率</label>
             <!-- pattern is required to invoke numeric keypad on iPhone -->
-            <div class="input-group">
+            <div class="input-group input-lg-height">
               <input id="tax-precent" type="text" pattern="[0-9]*" class="form-control" value="5">
               <span class="input-group-addon">%</span>
             </div>
