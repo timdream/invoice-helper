@@ -157,22 +157,16 @@ InvoiceHelper.prototype.checkCompanyId = function(blur) {
     return;
   }
 
-  if (blur) {
-    $id.parent().addClass('has-success');
-  } else {
-    $id.parent().addClass('has-warning');
-  }
+  $id.parent().addClass('has-success');
   $name.parent().addClass('has-warning');
 
   CompanyNameService.getCompanyFullNameFromId(val, function(name) {
     if (!name) {
-      $id.parent().removeClass('has-warning has-success').addClass('has-error');
-      $name.parent().removeClass('has-warning has-success').addClass('has-error');
+      $name.parent().removeClass('has-error has-success').addClass('has-warning');
 
       return;
     }
 
-    $id.parent().removeClass('has-warning has-error').addClass('has-success');
     $name.parent().removeClass('has-warning has-error').addClass('has-success');
     if ($name.val() !== name)
       $name.val(name);
@@ -185,11 +179,9 @@ InvoiceHelper.prototype.checkCompanyName = function(blur) {
   var $name = $(this.config.companyNameElement);
   var val = $.trim($name.val());
 
-  $id.parent().removeClass('has-error has-warning has-success');
   $name.parent().removeClass('has-error has-warning has-success');
 
   if (blur && val.length < 3) {
-    $id.parent().addClass('has-warning');
     $name.parent().addClass('has-warning');
 
     return;
@@ -199,7 +191,6 @@ InvoiceHelper.prototype.checkCompanyName = function(blur) {
     return;
   }
 
-  $id.parent().addClass('has-warning');
   $name.parent().addClass('has-warning');
 
   if (blur) {
@@ -217,8 +208,7 @@ InvoiceHelper.prototype._checkCompanyNameRemote = function(blur) {
 
   CompanyNameService.getCompany(val, function(info) {
     if (!info) {
-      $id.parent().removeClass('has-warning has-success').addClass('has-error');
-      $name.parent().removeClass('has-warning has-success').addClass('has-error');
+      $name.parent().removeClass('has-error has-success').addClass('has-warning');
 
       return;
     }
