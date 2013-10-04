@@ -226,54 +226,55 @@ PriceWidget.prototype.handleEvent = function(evt) {
   this.calculatePrice(evt.target, evt.type === 'blur');
 };
 PriceWidget.prototype.calculatePrice = function(baseElement, blur) {
-  var $price = $(this.config.priceElement);
-  var $taxPrecent = $(this.config.taxPrecentElement);
-  var $tax = $(this.config.taxElement);
-  var $total = $(this.config.totalElement);
+  var priceElement = this.config.priceElement;
+  var taxPrecentElement = this.config.taxPrecentElement;
+  var taxElement = this.config.taxElement;
+  var totalElement = this.config.totalElement;
   var $word = $(this.config.totalWordElement);
 
   switch (baseElement) {
-    case this.config.priceElement:
-      var price = parseInt($price.val(), 10) || 0;
-      var rate = 0.01 * parseFloat($taxPrecent.val(), 10) || 0;
+    case priceElement:
+      var price = this.getIntValue(priceElement) || 0;
+      var rate = 0.01 * parseFloat(taxPrecentElement.value, 10) || 0;
       var tax = Math.floor(price * rate);
 
       if (blur) {
-        $price.val(price);
+        priceElement.value = price;
       }
-      $tax.val(tax);
-      $total.val(price + tax);
-      $word.text(this.getNumInWord(price + tax));
+      taxElement.value = tax;
+      totalElement.value = price + tax;
 
       break;
 
-    case this.config.taxPrecentElement:
-      var price = parseInt($price.val(), 10) || 0;
-      var rate = 0.01 * parseFloat($taxPrecent.val(), 10) || 0;
+    case taxPrecentElement:
+      var price = this.getIntValue(priceElement) || 0;
+      var rate = 0.01 * parseFloat(taxPrecentElement.value, 10) || 0;
       var tax = Math.floor(price * rate);
 
-      $price.val(price);
-      $tax.val(tax);
-      $total.val(price + tax);
-      $word.text(this.getNumInWord(price + tax));
+      priceElement.value = price;
+      taxElement.value = tax;
+      totalElement.value = price + tax;
 
       break;
 
-    case this.config.totalElement:
-      var total = parseInt($total.val(), 10) || 0;
-      var rate = 0.01 * parseFloat($taxPrecent.val(), 10) || 0;
+    case totalElement:
+      var total = this.getIntValue(totalElement) || 0;
+      var rate = 0.01 * parseFloat(taxPrecentElement.value, 10) || 0;
       var price = Math.ceil(total / (1 + rate));
       var tax = total - price;
 
-      $tax.val(tax);
-      $price.val(price);
+      taxElement.value = tax;
+      priceElement.value = price;
       if (blur) {
-        $total.val(total);
+        totalElement.value = total;
       }
-      $word.text(this.getNumInWord(total));
 
       break;
   }
+  $word.text(this.getNumInWord(this.getIntValue(totalElement)));
+  this.updateNumberSeparatorToElement(priceElement);
+  this.updateNumberSeparatorToElement(taxElement);
+  this.updateNumberSeparatorToElement(totalElement);
 };
 PriceWidget.prototype.getNumInWord = function(num) {
   var cWord = '零壹貳參肆伍陸柒捌玖';
@@ -302,6 +303,47 @@ PriceWidget.prototype.getNumInWord = function(num) {
   });
 
   return word;
+};
+PriceWidget.prototype.getIntValue = function(el) {
+  return parseInt(el.value.replace(/[^\d]/g, ''), 10) || 0;
+};
+PriceWidget.prototype.updateNumberSeparatorToElement = function(el) {
+  var caretPosition = el.selectionStart;
+  var caretOffset = 0;
+  var val = [];
+
+  // Remove non-number characters
+  el.value.split('').forEach(function(c, i) {
+    if (/[^\d]/.test(c)) {
+      if (i < caretPosition)
+        caretOffset--;
+    } else {
+      val.push(c);
+    }
+  });
+
+  // Adding separator
+  var value = '';
+  val.forEach(function(c, i) {
+    value += c;
+    // Add separator for every three digit but not behind the 0th digit.
+    if (i !== (val.length - 1) && !((val.length - 1 - i) % 3)) {
+      // Move caret after adding a separator but not to do it
+      // if we will endded up moving caret behind the separator.
+      if (i < caretPosition && value.length !== caretPosition + caretOffset) {
+        caretOffset++;
+      }
+      value += ',';
+    }
+  });
+
+  if (el.value !== value) {
+    el.value = value;
+    // Only set the selectionEnd/Start when the element is currently focused.
+    if (document.activeElement === el) {
+      el.selectionStart = el.selectionEnd = caretPosition + caretOffset;
+    }
+  }
 };
 
 var TodayWidget = function TodayWidget(config) {
