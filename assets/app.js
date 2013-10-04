@@ -177,22 +177,28 @@ CompanyNameIdWidget.prototype.checkCompanyName = function(blur) {
 };
 CompanyNameIdWidget.prototype._checkCompanyNameRemote = function(blur) {
   var $id = $(this.config.companyIdElement);
-  var $name = $(this.config.companyNameElement);
-  var val = $.trim($name.val());
+  var companyNameElement = this.config.companyNameElement;
+  var $nameContainer = $(companyNameElement.parentNode);
 
-  CompanyNameService.getCompany(val, function(info) {
+  CompanyNameService.getCompany(companyNameElement.value, function(info) {
     if (!info) {
-      $name.parent().removeClass('has-error has-success').addClass('has-warning');
+      $nameContainer.removeClass('has-error has-success').addClass('has-warning');
 
       return;
     }
 
-    if (blur) {
-      if ($name.val() !== info.name) {
-        $name.val(info.name);
+    if (companyNameElement.value !== info.name) {
+      if (blur) {
+        companyNameElement.value = info.name;
+      } else {
+        var caretPosition = companyNameElement.selectionStart;
+        companyNameElement.value = info.name;
+        companyNameElement.selectionStart = caretPosition;
+        companyNameElement.selectionEnd = info.name.length;
       }
-      $name.parent().removeClass('has-warning has-error').addClass('has-success');
     }
+    $nameContainer.removeClass('has-warning has-error').addClass('has-success');
+
     if ($id.val() !== info.id) {
       $id.val(info.id);
     }
