@@ -120,7 +120,7 @@
               <span class="label label-danger">錯誤</span>
             </label>
             <!-- pattern is required to invoke numeric keypad on iPhone -->
-            <input id="company-id" type="text" inputmode="numeric" maxlength="8" pattern="[0-9]*" class="form-control input-lg">
+            <input id="company-id" type="text" inputmode="numeric" maxlength="8" pattern="[0-9]*" class="form-control input-lg" x-inputmode="numeric" inputmode="numeric">
           </div>
           <div class="form-group col-sm-9">
             <label for="company-name" class="">公司名稱
@@ -138,25 +138,25 @@
           <div class="form-group col-sm-3">
             <label for="price">銷售額（未稅）</label>
             <!-- pattern is required to invoke numeric keypad on iPhone -->
-            <input id="price" type="text" pattern="[0-9]*" class="form-control input-lg">
+            <input id="price" type="text" pattern="[0-9]*" class="form-control input-lg" x-inputmode="numeric" inputmode="numeric">
           </div>
           <div class="form-group col-sm-3">
             <label for="tax-precent">稅率</label>
             <!-- pattern is required to invoke numeric keypad on iPhone -->
             <div class="input-group input-lg-height">
-              <input id="tax-precent" type="text" pattern="[0-9]*" class="form-control" value="5">
+              <input id="tax-precent" type="text" pattern="[0-9]*" class="form-control" value="5" x-inputmode="numeric" inputmode="numeric">
               <span class="input-group-addon">%</span>
             </div>
           </div>
           <div class="form-group col-sm-3">
             <label for="tax">營業稅額</label>
             <!-- pattern is required to invoke numeric keypad on iPhone -->
-            <input id="tax" type="text" pattern="[0-9]*" class="form-control input-lg" readonly>
+            <input id="tax" type="text" pattern="[0-9]*" class="form-control input-lg"  x-inputmode="numeric" inputmode="numeric" readonly>
           </div>
           <div class="form-group col-sm-3">
             <label for="total">總計金額（含稅）</label>
             <!-- pattern is required to invoke numeric keypad on iPhone -->
-            <input id="total" type="text" pattern="[0-9]*" class="form-control input-lg">
+            <input id="total" type="text" pattern="[0-9]*" class="form-control input-lg" x-inputmode="numeric" inputmode="numeric">
           </div>
         </div>
         <div class="row">
