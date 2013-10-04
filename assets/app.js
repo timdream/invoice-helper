@@ -95,6 +95,7 @@ var CompanyNameIdWidget = function CompanyNameIdWidget(config) {
   config.companyNameElement.addEventListener('blur', this);
 
   this._companyNameTimer = undefined;
+  this._apiRequestId = 0;
 };
 CompanyNameIdWidget.prototype.INPUT_WAIT = 250;
 CompanyNameIdWidget.prototype.handleEvent = function(evt) {
@@ -116,6 +117,9 @@ CompanyNameIdWidget.prototype.checkCompanyId = function(blur) {
   var $name = $(this.config.companyNameElement);
   var val = $.trim($id.val());
 
+  clearTimeout(this._companyNameTimer);
+  this._apiRequestId++;
+
   $id.parent().removeClass('has-error has-warning has-success');
   $name.parent().removeClass('has-error has-warning has-success');
 
@@ -134,7 +138,12 @@ CompanyNameIdWidget.prototype.checkCompanyId = function(blur) {
   $id.parent().addClass('has-success');
   $name.parent().addClass('has-warning');
 
+  var apiRequestId = this._apiRequestId;
   CompanyNameService.getCompanyFullNameFromId(val, function(name) {
+    // Ignore the callback if we have another API request in-flight.
+    if (apiRequestId !== this._apiRequestId)
+      return;
+
     if (!name) {
       $name.parent().removeClass('has-error has-success').addClass('has-warning');
 
@@ -144,10 +153,11 @@ CompanyNameIdWidget.prototype.checkCompanyId = function(blur) {
     $name.parent().removeClass('has-warning has-error').addClass('has-success');
     if ($name.val() !== name)
       $name.val(name);
-  });
+  }.bind(this));
 };
 CompanyNameIdWidget.prototype.checkCompanyName = function(blur) {
   clearTimeout(this._companyNameTimer);
+  this._apiRequestId++;
 
   var $id = $(this.config.companyIdElement);
   var $name = $(this.config.companyNameElement);
@@ -180,7 +190,12 @@ CompanyNameIdWidget.prototype._checkCompanyNameRemote = function(blur) {
   var companyNameElement = this.config.companyNameElement;
   var $nameContainer = $(companyNameElement.parentNode);
 
+  var apiRequestId = this._apiRequestId;
   CompanyNameService.getCompany(companyNameElement.value, function(info) {
+    // Ignore the callback if we have another API request in-flight.
+    if (apiRequestId !== this._apiRequestId)
+      return;
+
     if (!info) {
       $nameContainer.removeClass('has-error has-success').addClass('has-warning');
 
@@ -203,7 +218,7 @@ CompanyNameIdWidget.prototype._checkCompanyNameRemote = function(blur) {
       $id.val(info.id);
     }
     $id.parent().removeClass('has-warning has-error').addClass('has-success');
-  });
+  }.bind(this));
 };
 
 var PriceWidget = function PriceWidget(config) {
