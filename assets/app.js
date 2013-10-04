@@ -82,41 +82,22 @@ var CompanyNameService = {
   }
 };
 
-var InvoiceHelper = function InvoiceHelper(config) {
+var CompanyNameIdWidget = function CompanyNameIdWidget(config) {
   this.config = config = config || {};
   config.companyIdElement =
     config.companyIdElement || document.getElementById('company-id');
   config.companyNameElement =
     config.companyNameElement || document.getElementById('company-name');
 
-  config.priceElement =
-    config.priceElement || document.getElementById('price');
-  config.taxPrecentElement =
-    config.taxPrecentElement || document.getElementById('tax-precent');
-  config.taxElement =
-    config.taxElement || document.getElementById('tax');
-  config.totalElement =
-    config.totalElement || document.getElementById('total');
-
-  config.totalWordElement =
-    config.totalWordElement || document.getElementById('total-word');
-
   config.companyIdElement.addEventListener('input', this);
   config.companyIdElement.addEventListener('blur', this);
   config.companyNameElement.addEventListener('input', this);
   config.companyNameElement.addEventListener('blur', this);
 
-  config.priceElement.addEventListener('input', this);
-  config.priceElement.addEventListener('blur', this);
-  config.taxPrecentElement.addEventListener('input', this);
-  config.taxPrecentElement.addEventListener('blur', this);
-  config.totalElement.addEventListener('input', this);
-  config.totalElement.addEventListener('blur', this);
-
   this._companyNameTimer = undefined;
 };
-InvoiceHelper.prototype.INPUT_WAIT = 250;
-InvoiceHelper.prototype.handleEvent = function(evt) {
+CompanyNameIdWidget.prototype.INPUT_WAIT = 250;
+CompanyNameIdWidget.prototype.handleEvent = function(evt) {
   var el = evt.target;
   switch (el) {
     case this.config.companyIdElement:
@@ -128,16 +109,9 @@ InvoiceHelper.prototype.handleEvent = function(evt) {
       this.checkCompanyName(evt.type === 'blur');
 
       break;
-
-    case this.config.priceElement:
-    case this.config.taxPrecentElement:
-    case this.config.totalElement:
-      this.calculatePrice(el, evt.type === 'blur');
-
-      break;
   }
 };
-InvoiceHelper.prototype.checkCompanyId = function(blur) {
+CompanyNameIdWidget.prototype.checkCompanyId = function(blur) {
   var $id = $(this.config.companyIdElement);
   var $name = $(this.config.companyNameElement);
   var val = $.trim($id.val());
@@ -172,7 +146,7 @@ InvoiceHelper.prototype.checkCompanyId = function(blur) {
       $name.val(name);
   });
 };
-InvoiceHelper.prototype.checkCompanyName = function(blur) {
+CompanyNameIdWidget.prototype.checkCompanyName = function(blur) {
   clearTimeout(this._companyNameTimer);
 
   var $id = $(this.config.companyIdElement);
@@ -201,7 +175,7 @@ InvoiceHelper.prototype.checkCompanyName = function(blur) {
     }.bind(this), this.INPUT_WAIT);
   }
 };
-InvoiceHelper.prototype._checkCompanyNameRemote = function(blur) {
+CompanyNameIdWidget.prototype._checkCompanyNameRemote = function(blur) {
   var $id = $(this.config.companyIdElement);
   var $name = $(this.config.companyNameElement);
   var val = $.trim($name.val());
@@ -225,11 +199,38 @@ InvoiceHelper.prototype._checkCompanyNameRemote = function(blur) {
     $id.parent().removeClass('has-warning has-error').addClass('has-success');
   });
 };
-InvoiceHelper.prototype.calculatePrice = function(baseElement, blur) {
+
+var PriceWidget = function PriceWidget(config) {
+  this.config = config = config || {};
+
+  config.priceElement =
+    config.priceElement || document.getElementById('price');
+  config.taxPrecentElement =
+    config.taxPrecentElement || document.getElementById('tax-precent');
+  config.taxElement =
+    config.taxElement || document.getElementById('tax');
+  config.totalElement =
+    config.totalElement || document.getElementById('total');
+
+  config.totalWordElement =
+    config.totalWordElement || document.getElementById('total-word');
+
+  config.priceElement.addEventListener('input', this);
+  config.priceElement.addEventListener('blur', this);
+  config.taxPrecentElement.addEventListener('input', this);
+  config.taxPrecentElement.addEventListener('blur', this);
+  config.totalElement.addEventListener('input', this);
+  config.totalElement.addEventListener('blur', this);
+};
+PriceWidget.prototype.handleEvent = function(evt) {
+  this.calculatePrice(evt.target, evt.type === 'blur');
+};
+PriceWidget.prototype.calculatePrice = function(baseElement, blur) {
   var $price = $(this.config.priceElement);
   var $taxPrecent = $(this.config.taxPrecentElement);
   var $tax = $(this.config.taxElement);
   var $total = $(this.config.totalElement);
+  var $word = $(this.config.totalWordElement);
 
   switch (baseElement) {
     case this.config.priceElement:
@@ -242,7 +243,7 @@ InvoiceHelper.prototype.calculatePrice = function(baseElement, blur) {
       }
       $tax.val(tax);
       $total.val(price + tax);
-      this._updateTotalWord(price + tax);
+      $word.text(this.getNumInWord(price + tax));
 
       break;
 
@@ -254,7 +255,7 @@ InvoiceHelper.prototype.calculatePrice = function(baseElement, blur) {
       $price.val(price);
       $tax.val(tax);
       $total.val(price + tax);
-      this._updateTotalWord(price + tax);
+      $word.text(this.getNumInWord(price + tax));
 
       break;
 
@@ -269,12 +270,12 @@ InvoiceHelper.prototype.calculatePrice = function(baseElement, blur) {
       if (blur) {
         $total.val(total);
       }
-      this._updateTotalWord(total);
+      $word.text(this.getNumInWord(total));
 
       break;
   }
 };
-InvoiceHelper.prototype._updateTotalWord = function(num) {
+PriceWidget.prototype.getNumInWord = function(num) {
   var cWord = '零壹貳參肆伍陸柒捌玖';
   var cOrder = ' 拾佰仟萬拾佰仟億';
 
@@ -282,9 +283,7 @@ InvoiceHelper.prototype._updateTotalWord = function(num) {
     num = num.toString(10);
 
   if (num.length > cOrder.length) {
-    $(this.config.totalWordElement).text('∞');
-
-    return;
+    return '∞';
   }
 
   var word = '';
@@ -302,7 +301,7 @@ InvoiceHelper.prototype._updateTotalWord = function(num) {
       word = cWord[n] + word;
   });
 
-  $(this.config.totalWordElement).text(word);
+  return word;
 };
 
 var TodayWidget = function TodayWidget(config) {
@@ -330,5 +329,6 @@ TodayWidget.prototype.update = function() {
 
 // TODO: move these calls to another file so we don't run them
 // on the unit test page.
-new InvoiceHelper();
+new CompanyNameIdWidget();
+new PriceWidget();
 new TodayWidget();
