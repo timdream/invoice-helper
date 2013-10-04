@@ -1,6 +1,6 @@
 'use strict';
 
-var InvoiceChecker = {
+var TaxIdChecker = {
   isValid: function(invoiceNumber) {
     if (typeof invoiceNumber !== 'string')
       invoiceNumber = invoiceNumber.toString(10);
@@ -145,7 +145,7 @@ InvoiceHelper.prototype.checkCompanyId = function(blur) {
   $id.parent().removeClass('has-error has-warning has-success');
   $name.parent().removeClass('has-error has-warning has-success');
 
-  if (!InvoiceChecker.isValid(val)) {
+  if (!TaxIdChecker.isValid(val)) {
     if (blur || val.length === 8) {
       $id.parent().addClass('has-error');
       $name.parent().addClass('has-warning');
@@ -305,9 +305,30 @@ InvoiceHelper.prototype._updateTotalWord = function(num) {
   $(this.config.totalWordElement).text(word);
 };
 
+var TodayWidget = function TodayWidget(config) {
+  this.config = config = config || {};
+  config.yearElement =
+    config.yearElement || document.getElementById('rocYear');
+  config.monthElement =
+    config.monthElement || document.getElementById('month');
+  config.dateElement =
+    config.dateElement || document.getElementById('date');
+
+  this.update();
+
+  // TODO: update labels after midnight here.
+  // window.addElementListener('moztimechange', ...)
+  // setTimeout(..., timeToMidnight);
+};
+TodayWidget.prototype.update = function() {
+  var d = new Date();
+  $(this.config.yearElement).text(d.getFullYear() - 1911);
+  $(this.config.monthElement).text(d.getMonth() + 1);
+  $(this.config.dateElement).text(d.getDate());
+};
+
+
+// TODO: move these calls to another file so we don't run them
+// on the unit test page.
 new InvoiceHelper();
-
-$('#year').text((new Date()).getFullYear() - 1911);
-$('#month').text((new Date()).getMonth() + 1);
-$('#date').text((new Date()).getDate());
-
+new TodayWidget();
