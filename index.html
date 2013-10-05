@@ -73,6 +73,12 @@
       display: none;
     }
 
+    input[inputmode="numeric"] {
+      /* Does not work on Chrome/WebKit and only works on IE/Fx,
+         see http://mdn.io/ime-mode */
+      ime-mode: disabled;
+    }
+
     .has-success .label-success,
     .has-warning .label-warning,
     .has-error .label-danger {
