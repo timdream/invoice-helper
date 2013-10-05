@@ -88,6 +88,8 @@ var CompanyNameIdWidget = function CompanyNameIdWidget(config) {
     config.companyIdElement || document.getElementById('company-id');
   config.companyNameElement =
     config.companyNameElement || document.getElementById('company-name');
+  config.checkingElement =
+    config.checkingElement || document.getElementById('company-id-name-checking');
 
   config.companyIdElement.addEventListener('input', this);
   config.companyIdElement.addEventListener('blur', this);
@@ -115,10 +117,12 @@ CompanyNameIdWidget.prototype.handleEvent = function(evt) {
 CompanyNameIdWidget.prototype.checkCompanyId = function(blur) {
   var $id = $(this.config.companyIdElement);
   var $name = $(this.config.companyNameElement);
+  var $checking = $(this.config.checkingElement);
   var val = $.trim($id.val());
 
   clearTimeout(this._companyNameTimer);
   this._apiRequestId++;
+  $checking.removeClass('show');
 
   $id.parent().removeClass('has-error has-warning has-success');
   $name.parent().removeClass('has-error has-warning has-success');
@@ -139,10 +143,13 @@ CompanyNameIdWidget.prototype.checkCompanyId = function(blur) {
   $name.parent().addClass('has-warning');
 
   var apiRequestId = this._apiRequestId;
+  $checking.addClass('show');
   CompanyNameService.getCompanyFullNameFromId(val, function(name) {
     // Ignore the callback if we have another API request in-flight.
     if (apiRequestId !== this._apiRequestId)
       return;
+
+    $checking.removeClass('show');
 
     if (!name) {
       $name.parent().removeClass('has-error has-success').addClass('has-warning');
@@ -161,8 +168,10 @@ CompanyNameIdWidget.prototype.checkCompanyName = function(blur) {
 
   var $id = $(this.config.companyIdElement);
   var $name = $(this.config.companyNameElement);
+  var $checking = $(this.config.checkingElement);
   var val = $.trim($name.val());
 
+  $checking.removeClass('show');
   $name.parent().removeClass('has-error has-warning has-success');
 
   if (blur && val.length < 3) {
@@ -187,14 +196,18 @@ CompanyNameIdWidget.prototype.checkCompanyName = function(blur) {
 };
 CompanyNameIdWidget.prototype._checkCompanyNameRemote = function(blur) {
   var $id = $(this.config.companyIdElement);
+  var $checking = $(this.config.checkingElement);
   var companyNameElement = this.config.companyNameElement;
   var $nameContainer = $(companyNameElement.parentNode);
 
   var apiRequestId = this._apiRequestId;
+  $checking.addClass('show');
   CompanyNameService.getCompany(companyNameElement.value, function(info) {
     // Ignore the callback if we have another API request in-flight.
     if (apiRequestId !== this._apiRequestId)
       return;
+
+    $checking.removeClass('show');
 
     if (!info) {
       $nameContainer.removeClass('has-error has-success').addClass('has-warning');

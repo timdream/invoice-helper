@@ -22,6 +22,38 @@
 
   </script>
   <style type="text/css">
+    @-webkit-keyframes rotate-small {
+      0% {
+        -webkit-transform: scale(0.6) rotate(0);
+      }
+      100% {
+        -webkit-transform: scale(0.6) rotate(360deg);
+      }
+    }
+
+    @keyframes rotate-small {
+      0% {
+        transform: scale(0.6) rotate(0);
+      }
+      100% {
+        transform: scale(0.6) rotate(360deg);
+      }
+    }
+
+    #company-id-name-checking {
+      display: none;
+    }
+
+    #company-id-name-checking.show {
+      float: right;
+      display: block;
+
+      -webkit-animation: rotate-small 1s linear infinite;
+      animation: rotate-small 1s linear infinite;
+      -webkit-transform-origin: 50% 60%;
+      transform-origin: 50% 60%;
+    }
+
     #facebook-like {
       float: right;
     }
@@ -110,7 +142,7 @@
       </fieldset>
 
       <fieldset>
-        <legend>買受人</legend>
+        <legend>買受人<span id="company-id-name-checking" class="glyphicon glyphicon-refresh"></span></legend>
         <p class="help-block">統編檢查與公司全名查詢僅含公司行號，不含法人團體。</p>
         <div class="row">
           <div class="form-group col-sm-3">
