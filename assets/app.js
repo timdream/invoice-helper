@@ -306,9 +306,13 @@ PriceWidget.prototype.calculatePrice = function(baseElement, blur) {
       break;
   }
   $word.text(this.getNumInWord(this.getIntValue(totalElement)));
-  this.updateNumberSeparatorToElement(priceElement);
-  this.updateNumberSeparatorToElement(taxElement);
-  this.updateNumberSeparatorToElement(totalElement);
+  // XXX Workaround Mobile Safari where it did not update caret position
+  // in the input event function loop.
+  window.setTimeout(function() {
+    this.updateNumberSeparatorToElement(priceElement);
+    this.updateNumberSeparatorToElement(taxElement);
+    this.updateNumberSeparatorToElement(totalElement);
+  }.bind(this));
 };
 PriceWidget.prototype.getNumInWord = function(num) {
   var cWord = '零壹貳參肆伍陸柒捌玖';
