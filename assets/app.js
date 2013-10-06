@@ -270,7 +270,7 @@ PriceWidget.prototype.calculatePrice = function(baseElement, blur) {
     case priceElement:
       var price = this.getIntValue(priceElement) || 0;
       var rate = 0.01 * parseFloat(taxPrecentElement.value, 10) || 0;
-      var tax = Math.floor(price * rate);
+      var tax = Math.round(price * rate);
 
       if (blur) {
         priceElement.value = price;
@@ -283,7 +283,7 @@ PriceWidget.prototype.calculatePrice = function(baseElement, blur) {
     case taxPrecentElement:
       var price = this.getIntValue(priceElement) || 0;
       var rate = 0.01 * parseFloat(taxPrecentElement.value, 10) || 0;
-      var tax = Math.floor(price * rate);
+      var tax = Math.round(price * rate);
 
       priceElement.value = price;
       taxElement.value = tax;
@@ -294,7 +294,7 @@ PriceWidget.prototype.calculatePrice = function(baseElement, blur) {
     case totalElement:
       var total = this.getIntValue(totalElement) || 0;
       var rate = 0.01 * parseFloat(taxPrecentElement.value, 10) || 0;
-      var price = Math.ceil(total / (1 + rate));
+      var price = Math.round(total / (1 + rate));
       var tax = total - price;
 
       taxElement.value = tax;
