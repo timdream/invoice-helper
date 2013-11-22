@@ -50,8 +50,7 @@ var CompanyNameService = {
   getCompany: function(queryString, callback) {
     $.getJSON(
       this.API_URL + 'search?q=' +
-      encodeURIComponent(queryString) +
-      '&callback=?',
+      encodeURIComponent(queryString),
       function(res) {
         if (!res || !res.data || res.found !== 1) {
           callback();
@@ -69,7 +68,7 @@ var CompanyNameService = {
   },
   getCompanyFullNameFromId: function(companyId, callback) {
     $.getJSON(
-      this.API_URL + 'show/' + companyId + '?callback=?',
+      this.API_URL + 'show/' + companyId,
       function(res) {
         if (!res || !res.data) {
           callback();
