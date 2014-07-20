@@ -87,6 +87,8 @@ var CompanyNameIdWidget = function CompanyNameIdWidget(config) {
     config.companyIdElement || document.getElementById('company-id');
   config.companyNameElement =
     config.companyNameElement || document.getElementById('company-name');
+  config.companyNamesElement =
+    config.companyNamesElement || document.getElementById('company-names');
   config.checkingElement =
     config.checkingElement || document.getElementById('company-id-name-checking');
 
@@ -97,7 +99,18 @@ var CompanyNameIdWidget = function CompanyNameIdWidget(config) {
 
   this._companyNameTimer = undefined;
   this._apiRequestId = 0;
+
+  this._companyNames =
+    JSON.parse(localStorage.getItem('company-autocomplete') || '[]');
+
+  var $companyNames = $(this.config.companyNamesElement);
+
+  this._companyNames.forEach(function(str) {
+    var data = str.split('::', 2);
+    $companyNames.append($('<option />').val(data[1]));
+  }, this);
 };
+CompanyNameIdWidget.prototype.LOCAL_STORAGE_KEY = 'company-autocomplete';
 CompanyNameIdWidget.prototype.INPUT_WAIT = 250;
 CompanyNameIdWidget.prototype.handleEvent = function(evt) {
   var el = evt.target;
@@ -157,9 +170,23 @@ CompanyNameIdWidget.prototype.checkCompanyId = function(blur) {
     }
 
     $name.parent().removeClass('has-warning has-error').addClass('has-success');
+    this.addCompanyNameRecords(val, name);
+
     if ($name.val() !== name)
       $name.val(name);
   }.bind(this));
+};
+CompanyNameIdWidget.prototype.addCompanyNameRecords = function(val, name) {
+  var str = val + '::' + name;
+
+  if (this._companyNames.indexOf(str) !== -1) {
+    return;
+  }
+
+  this._companyNames.push(str);
+  $(this.config.companyNamesElement).append($('<option />').val(name));
+  localStorage.setItem(
+    this.LOCAL_STORAGE_KEY, JSON.stringify(this._companyNames));
 };
 CompanyNameIdWidget.prototype.checkCompanyName = function(blur) {
   clearTimeout(this._companyNameTimer);
@@ -225,6 +252,7 @@ CompanyNameIdWidget.prototype._checkCompanyNameRemote = function(blur) {
       }
     }
     $nameContainer.removeClass('has-warning has-error').addClass('has-success');
+    this.addCompanyNameRecords(info.id, info.name);
 
     if ($id.val() !== info.id) {
       $id.val(info.id);
