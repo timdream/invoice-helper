@@ -121,6 +121,10 @@ CompanyNameIdWidget.prototype.handleEvent = function(evt) {
       break;
 
     case this.config.companyNameElement:
+      if ('isComposing' in evt && evt.isComposing) {
+        return;
+      }
+
       this.checkCompanyName(evt.type === 'blur');
 
       break;
