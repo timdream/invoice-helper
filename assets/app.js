@@ -60,13 +60,14 @@ var CompanyNameService = {
 
         var companyInfo = {
           name: this._getSingleCompanyName(res.data[0]),
+          fdi: !!res.data[0]['在中華民國境內營運資金'],
           id: res.data[0]['統一編號']
         };
 
         callback(companyInfo);
       }.bind(this));
   },
-  getCompanyFullNameFromId: function(companyId, callback) {
+  getCompanyFromId: function(companyId, callback) {
     $.getJSON(
       this.API_URL + 'show/' + companyId,
       function(res) {
@@ -76,7 +77,13 @@ var CompanyNameService = {
           return;
         }
 
-        callback(this._getSingleCompanyName(res.data));
+        var companyInfo = {
+          name: this._getSingleCompanyName(res.data),
+          fdi: !!res.data['在中華民國境內營運資金'],
+          id: companyId
+        };
+
+        callback(companyInfo);
       }.bind(this));
   }
 };
@@ -140,44 +147,49 @@ CompanyNameIdWidget.prototype.checkCompanyId = function(blur) {
   this._apiRequestId++;
   $checking.removeClass('show');
 
-  $id.parent().removeClass('has-error has-warning has-success');
-  $name.parent().removeClass('has-error has-warning has-success');
+  $id.parent().removeClass('has-error has-incomplete has-success');
+  $name.parent().removeClass('has-error has-fdi has-incomplete has-success');
 
   if (!TaxIdChecker.isValid(val)) {
     if (blur || val.length === 8) {
       $id.parent().addClass('has-error');
-      $name.parent().addClass('has-warning');
+      $name.parent().addClass('has-incomplete');
     } else {
-      $id.parent().addClass('has-warning');
-      $name.parent().addClass('has-warning');
+      $id.parent().addClass('has-incomplete');
+      $name.parent().addClass('has-incomplete');
     }
 
     return;
   }
 
   $id.parent().addClass('has-success');
-  $name.parent().addClass('has-warning');
+  $name.parent().addClass('has-incomplete');
 
   var apiRequestId = this._apiRequestId;
   $checking.addClass('show');
-  CompanyNameService.getCompanyFullNameFromId(val, function(name) {
+  CompanyNameService.getCompanyFromId(val, function(info) {
     // Ignore the callback if we have another API request in-flight.
     if (apiRequestId !== this._apiRequestId)
       return;
 
     $checking.removeClass('show');
 
-    if (!name) {
-      $name.parent().removeClass('has-error has-success').addClass('has-warning');
+    if (!info) {
+      $name.parent().removeClass('has-error has-fdi has-success').addClass('has-incomplete');
 
       return;
     }
 
-    $name.parent().removeClass('has-warning has-error').addClass('has-success');
-    this.addCompanyNameRecords(val, name);
+    if (info.fdi) {
+      $name.parent().removeClass('has-incomplete has-success has-error').addClass('has-fdi');
+    } else {
+      $name.parent().removeClass('has-incomplete has-fdi has-error').addClass('has-success');
+    }
 
-    if ($name.val() !== name)
-      $name.val(name);
+    this.addCompanyNameRecords(val, info.name);
+
+    if ($name.val() !== info.name)
+      $name.val(info.name);
   }.bind(this));
 };
 CompanyNameIdWidget.prototype.addCompanyNameRecords = function(val, name) {
@@ -202,10 +214,10 @@ CompanyNameIdWidget.prototype.checkCompanyName = function(blur) {
   var val = $.trim($name.val());
 
   $checking.removeClass('show');
-  $name.parent().removeClass('has-error has-warning has-success');
+  $name.parent().removeClass('has-error has-incomplete has-fdi has-success');
 
   if (blur && val.length < 3) {
-    $name.parent().addClass('has-warning');
+    $name.parent().addClass('has-incomplete');
 
     return;
   }
@@ -214,7 +226,7 @@ CompanyNameIdWidget.prototype.checkCompanyName = function(blur) {
     return;
   }
 
-  $name.parent().addClass('has-warning');
+  $name.parent().addClass('has-incomplete');
 
   if (blur) {
     this._checkCompanyNameRemote(true);
@@ -240,7 +252,7 @@ CompanyNameIdWidget.prototype._checkCompanyNameRemote = function(blur) {
     $checking.removeClass('show');
 
     if (!info) {
-      $nameContainer.removeClass('has-error has-success').addClass('has-warning');
+      $nameContainer.removeClass('has-error has-fdi has-success').addClass('has-incomplete');
 
       return;
     }
@@ -255,13 +267,19 @@ CompanyNameIdWidget.prototype._checkCompanyNameRemote = function(blur) {
         companyNameElement.selectionEnd = info.name.length;
       }
     }
-    $nameContainer.removeClass('has-warning has-error').addClass('has-success');
+
+    if (info.fdi) {
+      $nameContainer.removeClass('has-incomplete has-success has-error').addClass('has-fdi');
+    } else {
+      $nameContainer.removeClass('has-incomplete has-fdi has-error').addClass('has-success');
+    }
+
     this.addCompanyNameRecords(info.id, info.name);
 
     if ($id.val() !== info.id) {
       $id.val(info.id);
     }
-    $id.parent().removeClass('has-warning has-error').addClass('has-success');
+    $id.parent().removeClass('has-incomplete has-error').addClass('has-success');
   }.bind(this));
 };
 

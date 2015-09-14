@@ -91,7 +91,8 @@
     }
 
     .has-success .label-success,
-    .has-warning .label-warning,
+    .has-incomplete .label-incomplete,
+    .has-fdi .label-fdi,
     .has-error .label-danger {
       display: inline;
     }
@@ -160,12 +161,12 @@
 
       <fieldset>
         <legend>買受人<span id="company-id-name-checking" class="glyphicon glyphicon-refresh"></span></legend>
-        <p class="help-block">統編檢查與公司全名查詢僅含公司行號，不含法人團體。外商公司全名資料不包含分公司名稱，請以對方溝通全名為準。</p>
+        <p class="help-block">統編檢查與公司全名查詢僅含公司行號，不含法人團體。</p>
         <div class="row">
           <div class="form-group col-sm-3">
             <label for="company-id" class="">統一編號
               <span class="label label-success">正確</span>
-              <span class="label label-warning">未完成</span>
+              <span class="label label-warning label-incomplete">未完成</span>
               <span class="label label-danger">錯誤</span>
             </label>
             <!-- pattern is required to invoke numeric keypad on iPhone -->
@@ -174,7 +175,8 @@
           <div class="form-group col-sm-9">
             <label for="company-name" class="">公司名稱
               <span class="label label-success">正確全名與統編</span>
-              <span class="label label-warning">未完成</span>
+              <span class="label label-warning label-incomplete">未完成</span>
+              <span class="label label-warning label-fdi">外商公司資料不包含分公司名稱，請以對方溝通全名為準</span>
             </label>
             <input id="company-name" list="company-names" type="text" class="form-control input-lg">
           </div>
