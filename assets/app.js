@@ -319,6 +319,10 @@ PriceWidget.prototype.calculatePrice = function(baseElement, blur) {
     case priceElement:
       var price = this.getIntValue(priceElement) || 0;
       var rate = 0.01 * parseFloat(taxPrecentElement.value, 10) || 0;
+      // http://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0340080&FLNO=14
+      // 營業人銷售貨物或勞務，除本章第二節另有規定外，均應就銷售額，分別
+      // 按第七條或第十條規定計算其銷項稅額，尾數不滿通用貨幣一元者，按四
+      // 捨五入計算。
       var tax = Math.round(price * rate);
 
       if (blur) {
@@ -343,8 +347,25 @@ PriceWidget.prototype.calculatePrice = function(baseElement, blur) {
     case totalElement:
       var total = this.getIntValue(totalElement) || 0;
       var rate = 0.01 * parseFloat(taxPrecentElement.value, 10) || 0;
-      var price = Math.round(total / (1 + rate));
-      var tax = total - price;
+      // XXX: I am not sure if the rule apply here since the text explicitly
+      // talked about used vehicles. However there are multiple web search
+      // result suggest this is the right way to calculate the tax to pay
+      // from the total.
+      //
+      // http://law.moj.gov.tw/LawClass/LawSingle.aspx?Pcode=G0340080&FLNO=15-1
+      // 營業人銷售其向非依本節規定計算稅額者購買之舊乘人小汽車及機車，得
+      // 以該購入成本，按第十條規定之徵收率計算進項稅額；其計算公式如下：
+      //             購入成本
+      // 進項稅額＝───────ｘ徵收率
+      //             1 ＋徵收率
+      // 前項進項稅額，營業人應於申報該輛舊乘人小汽車及機車銷售額之當期，
+      // 申報扣抵該輛舊乘人小汽車及機車之銷項稅額。但進項稅額超過銷項稅額
+      // 部分不得扣抵。
+      // 營業人於申報第一項進項稅額時，應提示購入該輛舊乘人小汽車及機車之
+      // 進項憑證。
+      // 本條修正公布生效日尚未核課或尚未核課確定者，適用前三項規定辦理。
+      var tax = Math.round(total / (1 + rate) * rate);
+      var price = total - tax;
 
       taxElement.value = tax;
       priceElement.value = price;
