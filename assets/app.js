@@ -470,10 +470,10 @@ var TodayWidget = function TodayWidget(config) {
     config.dateElement || document.getElementById('date');
 
   this.update();
+  this.scheduleDateUpdate();
 
-  // TODO: update labels after midnight here.
+  // TODO: update after system time change.
   // window.addElementListener('moztimechange', ...)
-  // setTimeout(..., timeToMidnight);
 };
 TodayWidget.prototype.update = function() {
   var d = new Date();
@@ -481,7 +481,12 @@ TodayWidget.prototype.update = function() {
   $(this.config.monthElement).text(d.getMonth() + 1);
   $(this.config.dateElement).text(d.getDate());
 };
-
+TodayWidget.prototype.scheduleDateUpdate = function() {
+  var d = new Date();
+  var d2 = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 1);
+  this.timer =
+    window.setTimeout(this.update.bind(this), d2.getTime() - d.getTime());
+};
 
 // TODO: move these calls to another file so we don't run them
 // on the unit test page.
