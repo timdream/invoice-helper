@@ -69,10 +69,23 @@
       width: 300px; height: 150px;
     }
 
-    #total-word, #rocYear, #month, #date {
+    #total-word > .number, #total-word > .placeholder, #rocYear, #month, #date {
       font-weight: bold;
       font-size: 200%;
       font-family: 'Times','STKaiti','BiauKai','Kai','標楷體',serif;
+    }
+
+    #total-word > .number {
+      min-width: 1em;
+      padding: 0 0.25em;
+    }
+
+    #total-word > .number:first-child {
+      padding-left: 0;
+    }
+
+    #total-word > .number:last-child {
+      padding-right: 0;
     }
 
     .input-lg-height {

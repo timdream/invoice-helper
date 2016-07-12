@@ -375,7 +375,11 @@ PriceWidget.prototype.calculatePrice = function(baseElement, blur) {
 
       break;
   }
-  $word.text(this.getNumInWord(this.getIntValue(totalElement)));
+  $word.empty();
+  this.getNumInWordArr(this.getIntValue(totalElement))
+    .forEach(function(data) {
+      $word.append($('<span class="' + data.t + '">' + data.s + '</span>'));
+    });
   // XXX Workaround Mobile Safari where it did not update caret position
   // in the input event function loop.
   if (!blur) {
@@ -390,7 +394,7 @@ PriceWidget.prototype.calculatePrice = function(baseElement, blur) {
     this.updateNumberSeparatorToElement(totalElement);
   }
 };
-PriceWidget.prototype.getNumInWord = function(num) {
+PriceWidget.prototype.getNumInWordArr = function(num) {
   var cWord = '零壹貳參肆伍陸柒捌玖';
   var cOrder = ' 拾佰仟萬拾佰仟億';
 
@@ -398,25 +402,25 @@ PriceWidget.prototype.getNumInWord = function(num) {
     num = num.toString(10);
 
   if (num.length > cOrder.length) {
-    return '∞';
+    return [{ t: 'placeholder', s: '∞' }];
   }
 
-  var word = '';
+  var wordArr = [];
   var cNum = num.split('').map(function(n) {
       return parseInt(n, 10);
   });
 
   cNum.reverse().forEach(function(n, i) {
-    if ((i !== 0 && n !== 0) ||
-      ((i % 4 === 0) && (cNum[i + 1] || cNum[i + 2] || cNum[i + 3]))) {
-      word = cOrder[i] + word;
+    if ((i !== 0) && ((n !== 0) ||
+      ((i % 4 === 0) && (cNum[i + 1] || cNum[i + 2] || cNum[i + 3])))) {
+      wordArr.unshift({ t: 'order', s: cOrder[i] });
     }
 
     if (n !== 0 || (i === 0 && n === 0 && num.length === 1))
-      word = cWord[n] + word;
+      wordArr.unshift({ t: 'number', s: cWord[n] });
   });
 
-  return word;
+  return wordArr;
 };
 PriceWidget.prototype.getIntValue = function(el) {
   return parseInt(el.value.replace(/[^\d]/g, ''), 10) || 0;
