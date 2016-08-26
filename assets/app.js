@@ -38,7 +38,7 @@ var TaxIdChecker = {
 };
 
 var CompanyNameService = {
-  API_URL: 'http://company.g0v.ronny.tw/api/',
+  API_URL: 'https://company.g0v.ronny.tw/api/',
   _getSingleCompanyName: function(companyData) {
     if (typeof companyData['公司名稱'] === 'string') {
       return companyData['公司名稱'];
