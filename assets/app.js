@@ -40,12 +40,30 @@ var TaxIdChecker = {
 var CompanyNameService = {
   API_URL: 'https://company.g0v.ronny.tw/api/',
   _getSingleCompanyName: function(companyData) {
+    if (companyData['財政部'] &&
+        typeof companyData['財政部']['營業人名稱'] === 'string') {
+      return companyData['財政部']['營業人名稱'];
+    }
+
     if (typeof companyData['公司名稱'] === 'string') {
       return companyData['公司名稱'];
     }
 
     // Company has multiple names
     return companyData['公司名稱'][0];
+  },
+  _maybeGettingFDIParentCompanyName: function(companyData) {
+    if (companyData['財政部'] &&
+        typeof companyData['財政部']['營業人名稱'] === 'string') {
+      return false;
+    }
+
+    if (companyData['在中華民國境內營運資金']) {
+      return true;
+    }
+
+    return false;
+
   },
   getCompany: function(queryString, callback) {
     $.getJSON(
@@ -60,7 +78,7 @@ var CompanyNameService = {
 
         var companyInfo = {
           name: this._getSingleCompanyName(res.data[0]),
-          fdi: !!res.data[0]['在中華民國境內營運資金'],
+          fdi: this._maybeGettingFDIParentCompanyName(res.data[0]),
           id: res.data[0]['統一編號']
         };
 
@@ -79,7 +97,7 @@ var CompanyNameService = {
 
         var companyInfo = {
           name: this._getSingleCompanyName(res.data),
-          fdi: !!res.data['在中華民國境內營運資金'],
+          fdi: this._maybeGettingFDIParentCompanyName(res.data),
           id: companyId
         };
 
