@@ -105,6 +105,7 @@
 
     .has-success .label-success,
     .has-incomplete .label-incomplete,
+    .has-multiple .label-multiple,
     .has-fdi .label-fdi,
     .has-error .label-danger {
       display: inline;
@@ -187,9 +188,13 @@
           </div>
           <div class="form-group col-sm-9">
             <label for="company-name" class="">公司名稱
-              <span class="label label-success">正確全名與統編</span>
+              <a title="查詢公司資料" target="_blank" class="label label-success">正確全名與統編
+                <span class="glyphicon glyphicon-new-window"></span></a>
               <span class="label label-warning label-incomplete">未完成</span>
-              <span class="label label-warning label-fdi">外商公司資料不包含分公司名稱，請以對方溝通全名為準</span>
+              <a title="查詢公司資料" target="_blank" class="label label-warning label-fdi">外商公司資料不包含分公司名稱，請以對方溝通全名為準
+                <span class="glyphicon glyphicon-new-window"></span></a>
+              <a title="查詢公司資料" target="_blank" class="label label-warning label-multiple">找到多筆資料
+                <span class="glyphicon glyphicon-new-window"></span></a>
             </label>
             <input id="company-name" list="company-names" type="text" class="form-control input-lg">
           </div>

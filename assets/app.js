@@ -70,13 +70,20 @@ var CompanyNameService = {
       this.API_URL + 'search?q=' +
       encodeURIComponent(queryString),
       function(res) {
-        if (!res || !res.data || res.found !== 1) {
+        if (!res || !res.data || res.found === 0) {
           callback();
 
           return;
         }
 
+        if (res.found !== 1) {
+          callback({ found: res.found });
+
+          return;
+        }
+
         var companyInfo = {
+          found: 1,
           name: this._getSingleCompanyName(res.data[0]),
           fdi: this._maybeGettingFDIParentCompanyName(res.data[0]),
           id: res.data[0]['統一編號']
@@ -135,6 +142,8 @@ var CompanyNameIdWidget = function CompanyNameIdWidget(config) {
     $companyNames.append($('<option />').val(data[1]));
   }, this);
 };
+CompanyNameIdWidget.prototype.EXTERNAL_URL =
+  'https://company.g0v.ronny.tw/index/';
 CompanyNameIdWidget.prototype.LOCAL_STORAGE_KEY = 'company-autocomplete';
 CompanyNameIdWidget.prototype.INPUT_WAIT = 250;
 CompanyNameIdWidget.prototype.handleEvent = function(evt) {
@@ -166,7 +175,7 @@ CompanyNameIdWidget.prototype.checkCompanyId = function(blur) {
   $checking.removeClass('show');
 
   $id.parent().removeClass('has-error has-incomplete has-success');
-  $name.parent().removeClass('has-error has-fdi has-incomplete has-success');
+  $name.parent().removeClass('has-error has-fdi has-incomplete has-success has-multiple');
 
   if (!TaxIdChecker.isValid(val)) {
     if (blur || val.length === 8) {
@@ -232,7 +241,7 @@ CompanyNameIdWidget.prototype.checkCompanyName = function(blur) {
   var val = $.trim($name.val());
 
   $checking.removeClass('show');
-  $name.parent().removeClass('has-error has-incomplete has-fdi has-success');
+  $name.parent().removeClass('has-error has-multiple has-incomplete has-fdi has-success');
 
   if (blur && val.length < 3) {
     $name.parent().addClass('has-incomplete');
@@ -269,8 +278,17 @@ CompanyNameIdWidget.prototype._checkCompanyNameRemote = function(blur) {
 
     $checking.removeClass('show');
 
+    $nameContainer.find('a').attr('href', this.EXTERNAL_URL + 'search?q=' +
+      encodeURIComponent(companyNameElement.value));
+
     if (!info) {
-      $nameContainer.removeClass('has-error has-fdi has-success').addClass('has-incomplete');
+      $nameContainer.removeClass('has-multiple has-error has-fdi has-success').addClass('has-incomplete');
+
+      return;
+    }
+
+    if (info.found > 1) {
+      $nameContainer.removeClass('has-incomplete has-error has-fdi has-success').addClass('has-multiple');
 
       return;
     }
@@ -287,9 +305,9 @@ CompanyNameIdWidget.prototype._checkCompanyNameRemote = function(blur) {
     }
 
     if (info.fdi) {
-      $nameContainer.removeClass('has-incomplete has-success has-error').addClass('has-fdi');
+      $nameContainer.removeClass('has-multiple has-incomplete has-success has-error').addClass('has-fdi');
     } else {
-      $nameContainer.removeClass('has-incomplete has-fdi has-error').addClass('has-success');
+      $nameContainer.removeClass('has-multiple has-incomplete has-fdi has-error').addClass('has-success');
     }
 
     this.addCompanyNameRecords(info.id, info.name);
@@ -324,7 +342,10 @@ var PriceWidget = function PriceWidget(config) {
   config.totalElement.addEventListener('blur', this);
 };
 PriceWidget.prototype.handleEvent = function(evt) {
-  this.calculatePrice(evt.target, evt.type === 'blur');
+  // Move this to next tick so user can click on the labels
+  setTimeout(function() {
+    this.calculatePrice(evt.target, evt.type === 'blur');
+  }.bind(this));
 };
 PriceWidget.prototype.calculatePrice = function(baseElement, blur) {
   var priceElement = this.config.priceElement;
