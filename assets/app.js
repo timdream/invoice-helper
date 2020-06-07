@@ -1,7 +1,14 @@
 'use strict';
 
 var TaxIdChecker = {
+  _used: false,
+
   isValid: function(invoiceNumber) {
+    if (!this._used) {
+      this._used = true;
+      window._paq && window._paq.push(['trackEvent', 'TaxIdChecker', 'isValid:_used', 1]);
+    }
+
     if (typeof invoiceNumber !== 'string')
       invoiceNumber = invoiceNumber.toString(10);
 
@@ -26,10 +33,12 @@ var TaxIdChecker = {
     });
 
     if ((sum % 10) === 0) {
+      window._paq && window._paq.push(['trackEvent', 'TaxIdChecker', 'isValid', 1]);
       return true;
     }
 
     if (cN[6] === 7 && (sum % 10) === 1) {
+      window._paq && window._paq.push(['trackEvent', 'TaxIdChecker', 'isValid', 1]);
       return true;
     }
 
@@ -71,12 +80,16 @@ var CompanyNameService = {
       encodeURIComponent(queryString),
       function(res) {
         if (!res || !res.data || res.found === 0) {
+          window._paq && window._paq.push(['trackEvent', 'CompanyNameService', 'getCompany:fail', 1]);
+
           callback();
 
           return;
         }
 
         if (res.found !== 1) {
+          window._paq && window._paq.push(['trackEvent', 'CompanyNameService', 'getCompany:multiple', 1]);
+
           callback({ found: res.found });
 
           return;
@@ -89,6 +102,8 @@ var CompanyNameService = {
           id: res.data[0]['統一編號']
         };
 
+        window._paq && window._paq.push(['trackEvent', 'CompanyNameService', 'getCompany:success', 1]);
+
         callback(companyInfo);
       }.bind(this));
   },
@@ -97,6 +112,8 @@ var CompanyNameService = {
       this.API_URL + 'show/' + companyId,
       function(res) {
         if (!res || !res.data) {
+          window._paq && window._paq.push(['trackEvent', 'CompanyNameService', 'getCompanyFromId', 0]);
+
           callback();
 
           return;
@@ -107,6 +124,8 @@ var CompanyNameService = {
           fdi: this._maybeGettingFDIParentCompanyName(res.data),
           id: companyId
         };
+
+        window._paq && window._paq.push(['trackEvent', 'CompanyNameService', 'getCompanyFromId', 1]);
 
         callback(companyInfo);
       }.bind(this));
@@ -340,8 +359,15 @@ var PriceWidget = function PriceWidget(config) {
   config.taxPrecentElement.addEventListener('blur', this);
   config.totalElement.addEventListener('input', this);
   config.totalElement.addEventListener('blur', this);
+
+  this._used = false;
 };
 PriceWidget.prototype.handleEvent = function(evt) {
+  if (!this._used) {
+    this._used = true;
+    window._paq && window._paq.push(['trackEvent', 'PriceWidget', 'handleEvent:_used', 1]);
+  }
+
   // Move this to next tick so user can click on the labels
   setTimeout(function() {
     this.calculatePrice(evt.target, evt.type === 'blur');
