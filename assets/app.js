@@ -1,5 +1,9 @@
 'use strict';
 
+window.onerror = function onerror(message, url, line) {
+  window._paq && _paq.push(['trackEvent', 'JavaScript Exceptions', message, (url + ' (' + line + ')')]);
+};
+
 var TaxIdChecker = {
   _used: false,
 
