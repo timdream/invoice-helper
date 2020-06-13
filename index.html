@@ -46,6 +46,10 @@
       }
     }
 
+    #clean-up-stored-data:not(.has-data) {
+      display: none;
+    }
+
     #company-id-name-checking {
       display: none;
     }
@@ -170,7 +174,7 @@
 
       <fieldset>
         <legend>買受人<span id="company-id-name-checking" class="glyphicon glyphicon-refresh"></span></legend>
-        <p class="help-block">統編檢查與公司全名查詢僅含公司行號，不含法人團體。</p>
+        <p class="help-block">統編檢查與公司全名查詢僅含公司行號，不含法人團體。<a href="#" id="clean-up-stored-data">清除公司名稱紀錄⋯⋯</a></p>
         <div class="row">
           <div class="form-group col-sm-3">
             <label for="company-id" class="">統一編號

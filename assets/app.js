@@ -158,17 +158,21 @@ var CompanyNameIdWidget = function CompanyNameIdWidget(config) {
     config.companyNamesElement || document.getElementById('company-names');
   config.checkingElement =
     config.checkingElement || document.getElementById('company-id-name-checking');
+  config.removeStoredDataLinkElement =
+    config.removeStoredDataLinkElement || document.getElementById('clean-up-stored-data');
 
   config.companyIdElement.addEventListener('input', this);
   config.companyIdElement.addEventListener('blur', this);
   config.companyNameElement.addEventListener('input', this);
   config.companyNameElement.addEventListener('blur', this);
 
+  config.removeStoredDataLinkElement.addEventListener('click', this);
+
   this._companyNameTimer = undefined;
   this._apiRequestId = 0;
 
   this._companyNames =
-    JSON.parse(localStorage.getItem('company-autocomplete') || '[]');
+    JSON.parse(localStorage.getItem(this.LOCAL_STORAGE_KEY) || '[]');
 
   var $companyNames = $(this.config.companyNamesElement);
 
@@ -176,6 +180,10 @@ var CompanyNameIdWidget = function CompanyNameIdWidget(config) {
     var data = str.split('::', 2);
     $companyNames.append($('<option />').val(data[1]));
   }, this);
+
+  if (this._companyNames.length) {
+    $(config.removeStoredDataLinkElement).addClass('has-data');
+  }
 };
 CompanyNameIdWidget.prototype.EXTERNAL_URL =
   'https://company.g0v.ronny.tw/index/';
@@ -184,6 +192,19 @@ CompanyNameIdWidget.prototype.INPUT_WAIT = 250;
 CompanyNameIdWidget.prototype.handleEvent = function(evt) {
   var el = evt.target;
   switch (el) {
+    case this.config.removeStoredDataLinkElement:
+      evt.preventDefault();
+
+      var confirmed = window.confirm('您確定要刪除公司名稱紀錄嗎？');
+      if (!confirmed) {
+        return;
+      }
+
+      window.localStorage.removeItem(this.LOCAL_STORAGE_KEY);
+      $(this.config.companyNamesElement).empty();
+      $(this.config.removeStoredDataLinkElement).removeClass("has-data");
+      break;
+
     case this.config.companyIdElement:
       this.checkCompanyId(evt.type === 'blur');
 
@@ -265,6 +286,8 @@ CompanyNameIdWidget.prototype.addCompanyNameRecords = function(val, name) {
   $(this.config.companyNamesElement).append($('<option />').val(name));
   localStorage.setItem(
     this.LOCAL_STORAGE_KEY, JSON.stringify(this._companyNames));
+
+  $(this.config.removeStoredDataLinkElement).addClass("has-data");
 };
 CompanyNameIdWidget.prototype.checkCompanyName = function(blur) {
   clearTimeout(this._companyNameTimer);
