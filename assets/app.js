@@ -58,8 +58,12 @@ var CompanyNameService = {
       return companyData['公司名稱'];
     }
 
-    // Company has multiple names
-    return companyData['公司名稱'][0];
+    if (companyData['公司名稱'] && companyData['公司名稱'][0]) {
+      // Company has multiple names
+      return companyData['公司名稱'][0];
+    }
+
+    return;
   },
   _maybeGettingFDIParentCompanyName: function(companyData) {
     if (companyData['財政部'] &&
@@ -95,9 +99,15 @@ var CompanyNameService = {
           return;
         }
 
+        var name = this._getSingleCompanyName(res.data[0]);
+
+        if (!name) {
+          callback();
+        }
+
         var companyInfo = {
           found: 1,
-          name: this._getSingleCompanyName(res.data[0]),
+          name: name,
           fdi: this._maybeGettingFDIParentCompanyName(res.data[0]),
           id: res.data[0]['統一編號']
         };
@@ -119,8 +129,14 @@ var CompanyNameService = {
           return;
         }
 
+        var name = this._getSingleCompanyName(res.data);
+        if (!name) {
+          callback();
+          return;
+        }
+
         var companyInfo = {
-          name: this._getSingleCompanyName(res.data),
+          name: name,
           fdi: this._maybeGettingFDIParentCompanyName(res.data),
           id: companyId
         };
