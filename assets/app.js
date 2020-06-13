@@ -201,6 +201,8 @@ CompanyNameIdWidget.prototype.handleEvent = function(evt) {
         return;
       }
 
+      window._paq && window._paq.push(['trackEvent', 'CompanyNameIdWidget', 'cleanupSaveData', 1]);
+
       window.localStorage.removeItem(this.LOCAL_STORAGE_KEY);
       $(this.config.companyNamesElement).empty();
       $(this.config.removeStoredDataLinkElement).removeClass("has-data");
@@ -285,6 +287,7 @@ CompanyNameIdWidget.prototype.addCompanyNameRecords = function(val, name) {
 
   this._companyNames.push(str);
   $(this.config.companyNamesElement).append($('<option />').val(name));
+  window._paq && window._paq.push(['trackEvent', 'CompanyNameIdWidget', 'addSaveData', 1]);
   localStorage.setItem(
     this.LOCAL_STORAGE_KEY, JSON.stringify(this._companyNames));
 
@@ -313,6 +316,14 @@ CompanyNameIdWidget.prototype.checkCompanyName = function(blur) {
   }
 
   $name.parent().addClass('has-incomplete');
+
+  var regex = new RegExp("::" + val + "$");
+  this._companyNames.forEach(function(str) {
+    if (regex.test(str)) {
+      window._paq && window._paq.push(['trackEvent', 'CompanyNameIdWidget', 'foundSaveData', 1]);
+      // Still send the data remotely because we need more metadata.
+    }
+  });
 
   if (blur) {
     this._checkCompanyNameRemote(true);
