@@ -122,8 +122,7 @@ var CompanyNameService = {
       this.API_URL + 'show/' + companyId,
       function(res) {
         if (!res || !res.data) {
-          window._paq && window._paq.push(['trackEvent', 'CompanyNameService', 'getCompanyFromId', 0]);
-
+          window._paq && window._paq.push(['trackEvent', 'CompanyNameService', 'getCompanyFromId:fail', 1]);
           callback();
 
           return;
@@ -131,7 +130,9 @@ var CompanyNameService = {
 
         var name = this._getSingleCompanyName(res.data);
         if (!name) {
+          window._paq && window._paq.push(['trackEvent', 'CompanyNameService', 'getCompanyFromId:fail', 1]);
           callback();
+
           return;
         }
 
@@ -141,7 +142,7 @@ var CompanyNameService = {
           id: companyId
         };
 
-        window._paq && window._paq.push(['trackEvent', 'CompanyNameService', 'getCompanyFromId', 1]);
+        window._paq && window._paq.push(['trackEvent', 'CompanyNameService', 'getCompanyFromId:success', 1]);
 
         callback(companyInfo);
       }.bind(this));
