@@ -208,6 +208,7 @@ CompanyNameIdWidget.prototype.handleEvent = function(evt) {
       window._paq && window._paq.push(['trackEvent', 'CompanyNameIdWidget', 'cleanupSaveData', 1]);
 
       window.localStorage.removeItem(this.LOCAL_STORAGE_KEY);
+      this._companyNames = [];
       $(this.config.companyNamesElement).empty();
       $(this.config.removeStoredDataLinkElement).removeClass("has-data");
       break;
