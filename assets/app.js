@@ -324,6 +324,7 @@ CompanyNameIdWidget.prototype.checkCompanyName = function(blur) {
   var regex = new RegExp("::" + val + "$");
   this._companyNames.forEach(function(str) {
     if (regex.test(str)) {
+      $id.val(str.split('::', 2)[0]);
       window._paq && window._paq.push(['trackEvent', 'CompanyNameIdWidget', 'foundSaveData', 1]);
       // Still send the data remotely because we need more metadata.
     }
