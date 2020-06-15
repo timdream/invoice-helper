@@ -224,9 +224,7 @@ CompanyNameIdWidget.prototype.handleEvent = function(evt) {
       break;
 
     case this.config.companyIdElement:
-      setTimeout(function() {
-        this.checkCompanyId(evt.type === 'blur');
-      }.bind(this), 0);
+      this.checkCompanyId(evt.type === 'blur');
 
       break;
 
@@ -235,9 +233,7 @@ CompanyNameIdWidget.prototype.handleEvent = function(evt) {
         return;
       }
 
-      setTimeout(function() {
-        this.checkCompanyName(evt.type === 'blur');
-      }.bind(this), 0);
+      this.checkCompanyName(evt.type === 'blur');
 
       break;
   }
