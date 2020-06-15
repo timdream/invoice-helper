@@ -244,6 +244,11 @@ CompanyNameIdWidget.prototype.checkCompanyId = function(blur) {
   var $checking = $(this.config.checkingElement);
   var val = $.trim($id.val());
 
+  if (this._lastCheckValue === val) {
+    return;
+  }
+  this._lastCheckValue = val;
+
   clearTimeout(this._companyNameTimer);
   this._apiRequestId++;
   $checking.removeClass('show');
@@ -313,13 +318,19 @@ CompanyNameIdWidget.prototype.addCompanyNameRecords = function(val, name) {
   $(this.config.removeStoredDataLinkElement).addClass("has-data");
 };
 CompanyNameIdWidget.prototype.checkCompanyName = function(blur) {
+  var $name = $(this.config.companyNameElement);
+  var val = $.trim($name.val());
+
+  if (this._lastCheckValue === val) {
+    return;
+  }
+  this._lastCheckValue = val;
+
   clearTimeout(this._companyNameTimer);
   this._apiRequestId++;
 
   var $id = $(this.config.companyIdElement);
-  var $name = $(this.config.companyNameElement);
   var $checking = $(this.config.checkingElement);
-  var val = $.trim($name.val());
 
   $checking.removeClass('show');
   $name.parent().removeClass('has-error has-multiple has-incomplete has-fdi has-success');
@@ -338,7 +349,7 @@ CompanyNameIdWidget.prototype.checkCompanyName = function(blur) {
 
   this._companyNames.forEach(function(str) {
     var data = str.split("::", 2);
-    if (data[1] === str) {
+    if (data[1] === val) {
       $id.val(data[0]);
       window._paq && window._paq.push(['trackEvent', 'CompanyNameIdWidget', 'foundSaveData', 1]);
       // Still send the data remotely because we need more metadata.
