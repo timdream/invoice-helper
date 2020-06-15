@@ -206,11 +206,6 @@ CompanyNameIdWidget.prototype.INPUT_WAIT = 250;
 CompanyNameIdWidget.prototype.handleEvent = function(evt) {
   var el = evt.target;
 
-  if (evt.type === 'blur') {
-    setTimeout(this.handleEvent.bind(this, evt), 0);
-    return;
-  }
-
   switch (el) {
     case this.config.removeStoredDataLinkElement:
       evt.preventDefault();
@@ -229,7 +224,9 @@ CompanyNameIdWidget.prototype.handleEvent = function(evt) {
       break;
 
     case this.config.companyIdElement:
-      this.checkCompanyId(evt.type === 'blur');
+      setTimeout(function() {
+        this.checkCompanyId(evt.type === 'blur');
+      }.bind(this), 0);
 
       break;
 
@@ -238,7 +235,9 @@ CompanyNameIdWidget.prototype.handleEvent = function(evt) {
         return;
       }
 
-      this.checkCompanyName(evt.type === 'blur');
+      setTimeout(function() {
+        this.checkCompanyName(evt.type === 'blur');
+      }.bind(this), 0);
 
       break;
   }
