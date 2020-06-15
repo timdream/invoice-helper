@@ -174,7 +174,7 @@
 
       <fieldset>
         <legend>買受人<span id="company-id-name-checking" class="glyphicon glyphicon-refresh"></span></legend>
-        <p class="help-block">統編檢查與公司全名查詢僅含公司行號，不含法人團體。<a href="#" id="clean-up-stored-data">清除公司名稱紀錄⋯⋯</a></p>
+        <p class="help-block">統編檢查與全名查詢僅提供公司行號與部分機關團體資料，資料庫未收集所有有效統編。<a href="#" id="clean-up-stored-data">清除公司名稱紀錄⋯⋯</a></p>
         <div class="row">
           <div class="form-group col-sm-3">
             <label for="company-id" class="">統一編號
@@ -186,13 +186,13 @@
             <input id="company-id" type="text" inputmode="numeric" maxlength="8" pattern="[0-9]*" class="form-control input-lg" x-inputmode="numeric" inputmode="numeric">
           </div>
           <div class="form-group col-sm-9">
-            <label for="company-name" class="">公司名稱
-              <a title="查詢公司資料" target="_blank" class="label label-success">正確全名與統編
+            <label for="company-name" class="">名稱
+              <a title="查詢資料" target="_blank" class="label label-success">正確全名與統編
                 <span class="glyphicon glyphicon-new-window"></span></a>
               <span class="label label-warning label-incomplete">未完成</span>
-              <a title="查詢公司資料" target="_blank" class="label label-warning label-fdi">外商公司資料不包含分公司名稱，請以對方溝通全名為準
+              <a title="查詢資料" target="_blank" class="label label-warning label-fdi">外商公司資料不包含分公司名稱，請以對方溝通全名為準
                 <span class="glyphicon glyphicon-new-window"></span></a>
-              <a title="查詢公司資料" target="_blank" class="label label-warning label-multiple">找到多筆資料
+              <a title="查詢資料" target="_blank" class="label label-warning label-multiple">找到多筆資料
                 <span class="glyphicon glyphicon-new-window"></span></a>
             </label>
             <input id="company-name" list="company-names" type="text" class="form-control input-lg">
