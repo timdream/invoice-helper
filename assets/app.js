@@ -58,6 +58,11 @@ var CompanyNameService = {
       return companyData['財政部']['營業人名稱'];
     }
 
+    if (typeof companyData['名稱'] === 'string') {
+      // Organization name
+      return companyData['名稱'];
+    }
+
     if (typeof companyData['公司名稱'] === 'string') {
       return companyData['公司名稱'];
     }
@@ -106,7 +111,11 @@ var CompanyNameService = {
         var name = this._getSingleCompanyName(res.data[0]);
 
         if (!name) {
+          window._paq && window._paq.push(['trackEvent', 'CompanyNameService', 'getCompany:fail:name', 1]);
+
           callback();
+
+          return;
         }
 
         var companyInfo = {
@@ -275,6 +284,10 @@ CompanyNameIdWidget.prototype.checkCompanyId = function(blur) {
       $name.parent().removeClass('has-incomplete has-success has-error').addClass('has-fdi');
     } else {
       $name.parent().removeClass('has-incomplete has-fdi has-error').addClass('has-success');
+
+      var $nameContainer = $(this.config.companyNameElement.parentNode);
+      $nameContainer.find('a').attr('href', this.EXTERNAL_URL + 'search?q=' +
+        encodeURIComponent(info.id));
     }
 
     this.addCompanyNameRecords(val, info.name);
@@ -354,20 +367,24 @@ CompanyNameIdWidget.prototype._checkCompanyNameRemote = function(blur) {
 
     $checking.removeClass('show');
 
-    $nameContainer.find('a').attr('href', this.EXTERNAL_URL + 'search?q=' +
-      encodeURIComponent(companyNameElement.value));
-
     if (!info) {
       $nameContainer.removeClass('has-multiple has-error has-fdi has-success').addClass('has-incomplete');
+      $nameContainer.find('a').attr('href', this.EXTERNAL_URL + 'search?q=' +
+        encodeURIComponent(companyNameElement.value));
 
       return;
     }
 
     if (info.found > 1) {
       $nameContainer.removeClass('has-incomplete has-error has-fdi has-success').addClass('has-multiple');
+      $nameContainer.find('a').attr('href', this.EXTERNAL_URL + 'search?q=' +
+        encodeURIComponent(companyNameElement.value));
 
       return;
     }
+
+    $nameContainer.find('a').attr('href', this.EXTERNAL_URL + 'search?q=' +
+      encodeURIComponent(info.id));
 
     if (companyNameElement.value !== info.name) {
       if (blur) {
