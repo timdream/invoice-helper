@@ -205,6 +205,12 @@ CompanyNameIdWidget.prototype.LOCAL_STORAGE_KEY = 'company-autocomplete';
 CompanyNameIdWidget.prototype.INPUT_WAIT = 250;
 CompanyNameIdWidget.prototype.handleEvent = function(evt) {
   var el = evt.target;
+
+  if (evt.type === 'blur') {
+    setTimeout(this.handleEvent.bind(this, evt), 0);
+    return;
+  }
+
   switch (el) {
     case this.config.removeStoredDataLinkElement:
       evt.preventDefault();
