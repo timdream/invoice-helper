@@ -185,18 +185,20 @@ var CompanyNameIdWidget = function CompanyNameIdWidget(config) {
   this._companyNameTimer = undefined;
   this._apiRequestId = 0;
 
-  this._companyNames =
-    JSON.parse(localStorage.getItem(this.LOCAL_STORAGE_KEY) || '[]');
+  if (window.localStorage) {
+    this._companyNames =
+      JSON.parse(window.localStorage.getItem(this.LOCAL_STORAGE_KEY) || '[]');
 
-  var $companyNames = $(this.config.companyNamesElement);
+    var $companyNames = $(this.config.companyNamesElement);
 
-  this._companyNames.forEach(function(str) {
-    var data = str.split('::', 2);
-    $companyNames.append($('<option />').val(data[1]));
-  }, this);
+    this._companyNames.forEach(function(str) {
+      var data = str.split('::', 2);
+      $companyNames.append($('<option />').val(data[1]));
+    }, this);
 
-  if (this._companyNames.length) {
-    $(config.removeStoredDataLinkElement).addClass('has-data');
+    if (this._companyNames.length) {
+      $(config.removeStoredDataLinkElement).addClass('has-data');
+    }
   }
 };
 CompanyNameIdWidget.prototype.EXTERNAL_URL =
@@ -305,6 +307,10 @@ CompanyNameIdWidget.prototype.checkCompanyId = function(blur) {
 CompanyNameIdWidget.prototype.addCompanyNameRecords = function(val, name) {
   var str = val + '::' + name;
 
+  if (!window.localStorage) {
+    return;
+  }
+
   if (this._companyNames.indexOf(str) !== -1) {
     return;
   }
@@ -312,7 +318,7 @@ CompanyNameIdWidget.prototype.addCompanyNameRecords = function(val, name) {
   this._companyNames.push(str);
   $(this.config.companyNamesElement).append($('<option />').val(name));
   window._paq && window._paq.push(['trackEvent', 'CompanyNameIdWidget', 'addSaveData', 1]);
-  localStorage.setItem(
+  window.localStorage.setItem(
     this.LOCAL_STORAGE_KEY, JSON.stringify(this._companyNames));
 
   $(this.config.removeStoredDataLinkElement).addClass("has-data");
