@@ -180,6 +180,17 @@ var CompanyNameIdWidget = function CompanyNameIdWidget(config) {
   config.companyNameElement.addEventListener('input', this);
   config.companyNameElement.addEventListener('blur', this);
 
+  var $nameContainer = $(this.config.companyNameElement.parentNode);
+  $nameContainer.on('click', 'a', function() {
+    var url = this.href;
+    if (/q=[\d]{8}/.test(url)) {
+      url = url.replace(/q=.+/, 'q=' + encodeURIComponent('<id>'));
+    } else {
+      url = url.replace(/q=.+/, 'q=' + encodeURIComponent('<name>'));
+    }
+    window._paq && window._paq.push(['trackLink', url, 'link']);
+  });
+
   config.removeStoredDataLinkElement.addEventListener('click', this);
 
   this._companyNameTimer = undefined;

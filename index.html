@@ -17,6 +17,7 @@
       var u="//timc.idv.tw/matomo/";
       _paq.push(['setTrackerUrl', u+'matomo.php']);
       _paq.push(['setSiteId', '9']);
+      _paq.push(['setIgnoreClasses', ['matomo-ignore']]);
       var d=document, g=d.createElement('script'), s=d.getElementsByTagName('script')[0];
       g.type='text/javascript'; g.async=true; g.defer=true; g.src=u+'matomo.js'; s.parentNode.insertBefore(g,s);
     })();
@@ -138,7 +139,7 @@
     } */
   </style>
   <script type="text/javascript" src="./assets/jquery-3.5.1.min.js" defer></script>
-  <script type="text/javascript" src="./assets/app.js?_=1" defer></script>
+  <script type="text/javascript" src="./assets/app.js?_=2" defer></script>
 </head>
 <body>
   <div class="navbar navbar-default navbar-static-top" role="navigation">
@@ -187,12 +188,12 @@
           </div>
           <div class="form-group col-sm-9">
             <label for="company-name" class="">名稱
-              <a title="查詢資料" target="_blank" class="label label-success">正確全名與統編
+              <a title="查詢資料" target="_blank" class="label label-success matomo-ignore">正確全名與統編
                 <span class="glyphicon glyphicon-new-window"></span></a>
               <span class="label label-warning label-incomplete">未完成</span>
-              <a title="查詢資料" target="_blank" class="label label-warning label-fdi">外商公司資料不包含分公司名稱，請以對方溝通全名為準
+              <a title="查詢資料" target="_blank" class="label label-warning label-fdi matomo-ignore">外商公司資料不包含分公司名稱，請以對方溝通全名為準
                 <span class="glyphicon glyphicon-new-window"></span></a>
-              <a title="查詢資料" target="_blank" class="label label-warning label-multiple">找到多筆資料
+              <a title="查詢資料" target="_blank" class="label label-warning label-multiple matomo-ignore">找到多筆資料
                 <span class="glyphicon glyphicon-new-window"></span></a>
             </label>
             <input id="company-name" list="company-names" type="text" class="form-control input-lg">
